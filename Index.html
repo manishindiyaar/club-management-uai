@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClubHub Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-image: url('https://imgs.search.brave.com/LDvopIXBOk2Vlhws1JY7YaV4adSxlSiaIteYAYGUGlM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jb250/ZW50LmpkbWFnaWNi/b3guY29tL3YyL2Nv/bXAva2FyamF0L2k3/Lzk5OTlwMjE0MS4y/MTQxLjIzMDkwNDEw/NDIzOC50N2k3L2Nh/dGFsb2d1ZS91bml2/ZXJzYWwtYWktdW5p/dmVyc2l0eS1rdXNo/aXdhbGkta2FyamF0/LXVuaXZlcnNpdGll/cy1iM24zYjJkYnVx/LmpwZz93PTM4NDAm/cT03NQ');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .title {
+            font-family: cursive;
+            font-size: 2em;
+            text-align: center;
+            color: black;
+            margin-bottom: 20px;
+        }
+        .login-container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            border: 3px solid black;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            width: 100%;
+            text-align: center;
+            height: fit-content;
+        }
+        .login-container h1 {
+            margin-bottom: 15px;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+        .login-container input[type="submit"] {
+            background-color: black;
+            color: white;
+            cursor: pointer;
+        }
+        .login-container a {
+            text-decoration: none;
+            color: blue;
+        }
+        .login-container a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="https://dli6r6oycdqaz.cloudfront.net/college-105/user-1033715/08254895f603443f827efa41abc53bbe_20240812_043852_105_1033715_UniversalAIUniversityLogo100X8004.png" width="80" alt="University Logo">
+    </div>
+    <div class="title">Welcome to ClubHub</div>
+    <div class="login-container">
+        <h2><u>ClubHub Login</u></h2>
+        <form action="clubs.html" method="get">
+            <label for="username"><b>Username:</b></label>
+            <input type="text" name="username" required placeholder="Username/Registration ID">
+            
+            <label for="role"><b>Login As:</b></label>
+            <a href="login.html">Admin</a>
+            
+            <input type="submit" value="Login">
+            <p>Not registered? <a href="Register.html">Register</a></p>
+        </form>
+    </div>
+</body>
+</html>
