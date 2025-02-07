@@ -1,11 +1,104 @@
 [
-    {
-      "club_name": "Robotics Club",
-      "logo": "images/robo.png",
-      "president": "Vedant",
-      "vice_president": "Shubham Singh",
-      "total_member": 50
-    }
+  {
+    "club_name": "Robotics Club",
+    "logo": "images/robo.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 50
+  },
+  {
+    "club_name": "ELC",
+    "logo": "images/elc.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "Sports Club",
+    "logo": "images/sports.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "HR Club",
+    "logo": "images/HR.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "Rotaract Club",
+    "logo": "images/Rotaract.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "Alumni Club",
+    "logo": "images/Alumni.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "MatchBox Club",
+    "logo": "images/matchbox.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "TechOps Club",
+    "logo": "images/techops.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "Art & Culture Club",
+    "logo": "images/artsculture.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "Environment Club",
+    "logo": "images/environment.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "The Placements Club",
+    "logo": "images/placement.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "The Finance Club",
+    "logo": "images/finance.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "Enactus Club",
+    "logo": "images/enactus.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  },
+  {
+    "club_name": "Ethics & CSR Club",
+    "logo": "images/ethics&csr.png",
+    "president": "Vedant",
+    "vice_president": "Shubham Singh",
+    "total_member": 100
+  }
+
+
   
-  ]
-  
+
+]
