@@ -5,6 +5,20 @@
       "president": "Vedant",
       "vice_president": "Shubham Singh",
       "total_member": 50
+    },
+    {
+      "club_name": "Robotics Club",
+      "logo": "images/robo.png",
+      "president": "Vedant",
+      "vice_president": "Shubham Singh",
+      "total_member": 50
+    },
+    {
+      "club_name": "Robotics Club",
+      "logo": "images/robo.png",
+      "president": "Vedant",
+      "vice_president": "Shubham Singh",
+      "total_member": 50
     }
   
   ]

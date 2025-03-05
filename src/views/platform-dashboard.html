@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Dashboard - Club Management System</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --background: #f5f6fa;
+            --text-color: #2c3e50;
+            --card-background: #ffffff;
+            --nav-width: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            display: flex;
+        }
+
+        /* Side Navigation */
+        .side-nav {
+            width: var(--nav-width);
+            height: 100vh;
+            background-color: var(--card-background);
+            padding: 2rem 1rem;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 2rem;
+        }
+
+        .nav-header h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--nav-width);
+            padding: 2rem;
+            width: calc(100% - var(--nav-width));
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        /* Recent Activity */
+        .activity-section {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .activity-section h3 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-meta {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Tables */
+        .table-container {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Side Navigation -->
+    <nav class="side-nav">
+        <div class="nav-header">
+            <h1>Platform Admin</h1>
+            <div class="admin-info" id="adminInfo">Loading admin information...</div>
+        </div>
+        <div class="nav-links">
+            <a class="nav-link active" onclick="loadContent('dashboard')">Dashboard</a>
+            <a class="nav-link" onclick="loadContent('clubs')">Manage Clubs</a>
+            <a class="nav-link" onclick="loadContent('events')">All Events</a>
+            <a class="nav-link" onclick="loadContent('students')">All Students</a>
+            <a class="nav-link" onclick="loadContent('settings')">Settings</a>
+            <a class="nav-link" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Content will be loaded dynamically -->
+    </main>
+
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('superAdminToken');
+            if (!token) {
+                window.location.href = '/platform';
+                return;
+            }
+
+            const admin = JSON.parse(localStorage.getItem('superAdmin'));
+            document.getElementById('adminInfo').textContent = admin.email;
+            loadContent('dashboard');
+        });
+
+        // Load content based on section
+        async function loadContent(section) {
+            const mainContent = document.getElementById('mainContent');
+            const token = localStorage.getItem('superAdminToken');
+
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.textContent.toLowerCase().includes(section)) {
+                    link.classList.add('active');
+                }
+            });
+
+            try {
+                switch(section) {
+                    case 'dashboard':
+                        const response = await fetch('/api/platform/dashboard', {
+                            headers: {
+                                'X-Super-Admin-Token': token
+                            }
+                        });
+                        const data = await response.json();
+                        
+                        mainContent.innerHTML = `
+                            <div class="content-header">
+                                <h2>Dashboard Overview</h2>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <h3>Total Clubs</h3>
+                                    <div class="stat-value">${data.totalClubs}</div>
+                                </div>
+                                <div class="stat-card">
+                                    <h3>Total Events</h3>
+                                    <div class="stat-value">${data.totalEvents}</div>
+                                </div>
+                                <div class="stat-card">
+                                    <h3>Total Students</h3>
+                                    <div class="stat-value">${data.totalStudents}</div>
+                                </div>
+                            </div>
+
+                            <div class="activity-section">
+                                <h3>Recent Events</h3>
+                                <div class="activity-list">
+                                    ${data.recentEvents.map(event => `
+                                        <div class="activity-item">
+                                            <div class="activity-title">${event.title}</div>
+                                            <div class="activity-meta">
+                                                Organized by ${event.organizedBy.name}
+                                                on ${new Date(event.date).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <div class="activity-section">
+                                <h3>Recent Students</h3>
+                                <div class="activity-list">
+                                    ${data.recentStudents.map(student => `
+                                        <div class="activity-item">
+                                            <div class="activity-title">${student.name}</div>
+                                            <div class="activity-meta">${student.email}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'clubs':
+                        const clubsResponse = await fetch('/api/platform/clubs', {
+                            headers: {
+                                'X-Super-Admin-Token': token
+                            }
+                        });
+                        const clubsData = await clubsResponse.json();
+                        
+                        mainContent.innerHTML = `
+                            <div class="content-header">
+                                <h2>Manage Clubs</h2>
+                                <button class="btn btn-primary" onclick="showAddClubModal()">Add New Club</button>
+                            </div>
+                            
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Club Name</th>
+                                            <th>President</th>
+                                            <th>Vice President</th>
+                                            <th>Members</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${clubsData.clubs.map(club => `
+                                            <tr>
+                                                <td>${club.name}</td>
+                                                <td>${club.president.name}</td>
+                                                <td>${club.vicePresident.name}</td>
+                                                <td>${club.members.length}</td>
+                                                <td>
+                                                    <button class="btn btn-primary" onclick="editClub('${club._id}')">Edit</button>
+                                                    <button class="btn btn-danger" onclick="deleteClub('${club._id}')">Delete</button>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        break;
+
+                    // Add other sections as needed
+                }
+            } catch (error) {
+                console.error('Error loading content:', error);
+                mainContent.innerHTML = `
+                    <div class="content-header">
+                        <h2>Error</h2>
+                        <p>Failed to load content. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('superAdminToken');
+            localStorage.removeItem('superAdmin');
+            window.location.href = '/platform';
+        }
+
+        // Add other functions for managing clubs, events, and students
+    </script>
+</body>
+</html> 

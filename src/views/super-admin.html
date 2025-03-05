@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard - Club Management</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #9b59b6;
+            --accent-color: #e74c3c;
+            --background: #f5f6fa;
+            --text-color: #2c3e50;
+            --card-background: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--card-background);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .super-admin-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .container {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .content-section {
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #8e44ad;
+        }
+
+        .club-list, .message-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .club-card {
+            background-color: var(--background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .club-card h4 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .club-stats {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <img src="https://dli6r6oycdqaz.cloudfront.net/college-105/user-1033715/08254895f603443f827efa41abc53bbe_20240812_043852_105_1033715_UniversalAIUniversityLogo100X8004.png" alt="University Logo">
+            <h1>ClubHub <span class="super-admin-badge">Super Admin</span></h1>
+        </div>
+        <button onclick="logout()" class="btn btn-primary">Logout</button>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <h3>Total Clubs</h3>
+                <div class="stat-number" id="totalClubs">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Students</h3>
+                <div class="stat-number" id="totalStudents">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Events</h3>
+                <div class="stat-number" id="activeEvents">0</div>
+            </div>
+        </div>
+
+        <section class="content-section">
+            <div class="section-header">
+                <h2>Manage Clubs</h2>
+                <button onclick="showModal('createClubModal')" class="btn btn-primary">Create New Club</button>
+            </div>
+            <div class="club-list" id="clubList">
+                <!-- Clubs will be loaded here -->
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="section-header">
+                <h2>Send Communication</h2>
+            </div>
+            <form id="messageForm" onsubmit="handleSendMessage(event)">
+                <div class="form-group">
+                    <label for="clubSelect">Select Club</label>
+                    <select id="clubSelect" required>
+                        <option value="">Select a club</option>
+                        <option value="all">All Clubs</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="messageTitle">Message Title</label>
+                    <input type="text" id="messageTitle" required placeholder="Enter message title">
+                </div>
+                <div class="form-group">
+                    <label for="messageContent">Message Content</label>
+                    <textarea id="messageContent" rows="4" required placeholder="Enter your message"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </section>
+    </div>
+
+    <!-- Create Club Modal -->
+    <div id="createClubModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideModal('createClubModal')">&times;</button>
+            <h2>Create New Club</h2>
+            <form id="createClubForm" onsubmit="handleCreateClub(event)">
+                <div class="form-group">
+                    <label for="clubName">Club Name</label>
+                    <input type="text" id="clubName" required>
+                </div>
+                <div class="form-group">
+                    <label for="clubDescription">Description</label>
+                    <textarea id="clubDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="presidentEmail">President Email</label>
+                    <input type="email" id="presidentEmail" required pattern=".*@universalai\.edu\.in$">
+                </div>
+                <div class="form-group">
+                    <label for="vicePresidentEmail">Vice President Email</label>
+                    <input type="email" id="vicePresidentEmail" required pattern=".*@universalai\.edu\.in$">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Club</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let clubs = [];
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            const email = localStorage.getItem('superAdminEmail');
+            if (!email) {
+                window.location.href = '/super-admin-login';
+                return;
+            }
+            await loadDashboard();
+        });
+
+        async function loadDashboard() {
+            try {
+                const [statsResponse, clubsResponse] = await Promise.all([
+                    fetch('/api/super-admin/stats'),
+                    fetch('/api/super-admin/clubs')
+                ]);
+
+                const stats = await statsResponse.json();
+                const clubsData = await clubsResponse.json();
+
+                updateStats(stats);
+                clubs = clubsData.clubs;
+                updateClubList();
+                updateClubSelect();
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                alert('Error loading dashboard data');
+            }
+        }
+
+        function updateStats(stats) {
+            document.getElementById('totalClubs').textContent = stats.totalClubs;
+            document.getElementById('totalStudents').textContent = stats.totalStudents;
+            document.getElementById('activeEvents').textContent = stats.activeEvents;
+        }
+
+        function updateClubList() {
+            const clubList = document.getElementById('clubList');
+            clubList.innerHTML = clubs.map(club => `
+                <div class="club-card">
+                    <h4>${club.name}</h4>
+                    <p>${club.description}</p>
+                    <div class="club-stats">
+                        <span>${club.members.length} Members</span>
+                        <span>${club.events.length} Events</span>
+                    </div>
+                    <button onclick="deleteClub('${club._id}')" class="btn btn-primary">Delete Club</button>
+                </div>
+            `).join('');
+        }
+
+        function updateClubSelect() {
+            const select = document.getElementById('clubSelect');
+            const currentOptions = Array.from(select.options).map(opt => opt.value);
+            
+            clubs.forEach(club => {
+                if (!currentOptions.includes(club._id)) {
+                    const option = document.createElement('option');
+                    option.value = club._id;
+                    option.textContent = club.name;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        async function handleCreateClub(event) {
+            event.preventDefault();
+            const formData = {
+                name: document.getElementById('clubName').value,
+                description: document.getElementById('clubDescription').value,
+                presidentEmail: document.getElementById('presidentEmail').value,
+                vicePresidentEmail: document.getElementById('vicePresidentEmail').value
+            };
+
+            try {
+                const response = await fetch('/api/super-admin/clubs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Club created successfully!');
+                    hideModal('createClubModal');
+                    await loadDashboard();
+                } else {
+                    alert(data.message || 'Error creating club');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error creating club');
+            }
+        }
+
+        async function deleteClub(clubId) {
+            if (!confirm('Are you sure you want to delete this club?')) return;
+
+            try {
+                const response = await fetch(`/api/super-admin/clubs/${clubId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Club deleted successfully!');
+                    await loadDashboard();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Error deleting club');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error deleting club');
+            }
+        }
+
+        async function handleSendMessage(event) {
+            event.preventDefault();
+            const formData = {
+                clubId: document.getElementById('clubSelect').value,
+                title: document.getElementById('messageTitle').value,
+                content: document.getElementById('messageContent').value
+            };
+
+            try {
+                const response = await fetch('/api/super-admin/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                    event.target.reset();
+                } else {
+                    alert(data.message || 'Error sending message');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error sending message');
+            }
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('superAdminEmail');
+            window.location.href = '/super-admin-login';
+        }
+    </script>
+</body>
+</html> 

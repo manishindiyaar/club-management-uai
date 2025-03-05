@@ -1,0 +1,791 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Club Management</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --background: #f0f2f5;
+            --text-color: #2c3e50;
+            --card-background: #ffffff;
+            --nav-width: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            display: flex;
+        }
+
+        /* Side Navigation */
+        .side-nav {
+            width: var(--nav-width);
+            height: 100vh;
+            background-color: var(--card-background);
+            padding: 2rem 1rem;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 2rem;
+        }
+
+        .nav-header h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .club-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--nav-width);
+            padding: 2rem;
+            width: calc(100% - var(--nav-width));
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Content Cards */
+        .content-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        /* Student List */
+        .student-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .student-card {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .student-card h4 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .student-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .student-test {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Event Styles */
+        .event-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .event-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .event-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .event-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .event-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .event-details p {
+            margin-bottom: 0.5rem;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .event-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .status-active {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-upcoming {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-completed {
+            background-color: #fafafa;
+            color: #616161;
+        }
+    </style>
+</head>
+<body>
+    <!-- Side Navigation -->
+    <nav class="side-nav">
+        <div class="nav-header">
+            <h1>ClubHub Admin</h1>
+            <div class="club-info" id="clubInfo">Loading club information...</div>
+        </div>
+        <div class="nav-links">
+            <a class="nav-link" onclick="loadContent('dashboard')">Dashboard</a>
+            <a class="nav-link" onclick="loadContent('create-event')">Create Event</a>
+            <a class="nav-link" onclick="loadContent('manage-events')">Manage Events</a>
+            <a class="nav-link" onclick="loadContent('add-member')">Add Member</a>
+            <a class="nav-link" onclick="loadContent('members')">View Members</a>
+            <a class="nav-link" onclick="loadContent('messages')">Messages</a>
+            <a class="nav-link" onclick="loadContent('students')">Manage Students</a>
+        </div>
+        <button onclick="window.location.href='/'" class="logout-btn">Logout</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div id="content-area">
+            <div class="content-header">
+                <h2>Welcome to Admin Dashboard</h2>
+                <p>Select an option from the navigation menu to get started.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideModal('addStudentModal')">&times;</button>
+            <h2>Add New Student</h2>
+            <form id="addStudentForm" onsubmit="handleAddStudent(event)">
+                <div class="form-group">
+                    <label for="studentName">Full Name</label>
+                    <input type="text" id="studentName" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentEmail">University Email</label>
+                    <input type="email" id="studentEmail" required 
+                           pattern=".*@universalai\.in$"
+                           title="Please use university email (@universalai.in)">
+                </div>
+                <div class="form-group">
+                    <label for="studentTest">Test Score</label>
+                    <input type="number" id="studentTest" required min="0" max="100" 
+                           title="Score must be between 0 and 100">
+                </div>
+                <div class="form-group">
+                    <label for="studentBio">Bio</label>
+                    <textarea id="studentBio" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="addEventModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideModal('addEventModal')">&times;</button>
+            <h2>Create New Event</h2>
+            <form id="addEventForm" onsubmit="handleAddEvent(event)">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" name="description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Event Date</label>
+                    <input type="datetime-local" id="eventDate" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="venue">Venue</label>
+                    <input type="text" id="venue" name="venue" required>
+                </div>
+                <div class="form-group">
+                    <label for="maxParticipants">Maximum Participants</label>
+                    <input type="number" id="maxParticipants" name="maxParticipants" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Event</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Show/Hide Modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Add admin email to headers for all API requests
+        function getHeaders() {
+            const adminEmail = localStorage.getItem('adminEmail');
+            console.log('Getting headers - admin email:', adminEmail);
+            
+            if (!adminEmail) {
+                console.error('No admin email found in localStorage');
+                window.location.href = '/admin-login';
+                return {};
+            }
+            
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-Admin-Email': adminEmail
+            };
+            
+            console.log('Sending headers:', headers);
+            return headers;
+        }
+
+        // Load Content
+        function loadContent(section) {
+            const contentArea = document.getElementById('content-area');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.textContent.toLowerCase().includes(section)) {
+                    link.classList.add('active');
+                }
+            });
+
+            switch(section) {
+                case 'students':
+                    contentArea.innerHTML = `
+                        <div class="content-header">
+                            <h2>Student Management</h2>
+                            <button onclick="showModal('addStudentModal')" class="btn btn-primary">Add New Student</button>
+                        </div>
+                        <div class="content-card">
+                            <div class="student-list" id="studentList">
+                                Loading students...
+                            </div>
+                        </div>
+                    `;
+                    loadStudents();
+                    break;
+                case 'create-event':
+                    contentArea.innerHTML = `
+                        <div class="content-header">
+                            <h2>Create Event</h2>
+                            <button onclick="showModal('addEventModal')" class="btn btn-primary">Create New Event</button>
+                        </div>
+                        <div class="content-card">
+                            <div class="event-list" id="eventList">
+                                Loading events...
+                            </div>
+                        </div>
+                    `;
+                    loadEvents();
+                    break;
+                case 'manage-events':
+                    contentArea.innerHTML = `
+                        <div class="content-header">
+                            <h2>Manage Events</h2>
+                        </div>
+                        <div class="content-card">
+                            <div class="event-list" id="eventList">
+                                Loading events...
+                            </div>
+                        </div>
+                    `;
+                    loadEvents();
+                    break;
+                // Add other content sections here
+                default:
+                    contentArea.innerHTML = `
+                        <div class="content-header">
+                            <h2>${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
+                        </div>
+                        <div class="content-card">
+                            <p>Content for ${section} will be loaded here.</p>
+                        </div>
+                    `;
+            }
+        }
+
+        // Load students
+        async function loadStudents() {
+            try {
+                const response = await fetch('/api/admin/students', {
+                    headers: getHeaders()
+                });
+                const data = await response.json();
+                updateStudentList(data.students);
+            } catch (error) {
+                console.error('Error loading students:', error);
+                document.getElementById('studentList').innerHTML = 'Error loading students';
+            }
+        }
+
+        // Update student list display
+        function updateStudentList(students) {
+            const studentList = document.getElementById('studentList');
+            if (!students || students.length === 0) {
+                studentList.innerHTML = '<p>No students found.</p>';
+                return;
+            }
+            
+            studentList.innerHTML = students.map(student => `
+                <div class="student-card">
+                    <h4>${student.name}</h4>
+                    <div class="student-info">
+                        <p><strong>Email:</strong> ${student.email}</p>
+                        <p><strong>Bio:</strong> ${student.bio || 'No bio provided'}</p>
+                    </div>
+                    <div class="student-test">
+                        Test Score: ${student.test}/100
+                    </div>
+                    <div class="student-actions">
+                        <button onclick="editStudent('${student._id}')" class="btn btn-primary">Edit</button>
+                        <button onclick="deleteStudent('${student._id}')" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Handle add student
+        async function handleAddStudent(event) {
+            event.preventDefault();
+            const formData = {
+                name: document.getElementById('studentName').value,
+                email: document.getElementById('studentEmail').value,
+                test: parseInt(document.getElementById('studentTest').value),
+                bio: document.getElementById('studentBio').value
+            };
+
+            try {
+                const response = await fetch('/api/admin/students', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Student added successfully!');
+                    hideModal('addStudentModal');
+                    document.getElementById('addStudentForm').reset();
+                    await loadStudents();
+                } else {
+                    alert(data.message || 'Error adding student');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error adding student');
+            }
+        }
+
+        // Delete student
+        async function deleteStudent(studentId) {
+            if (!confirm('Are you sure you want to delete this student?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/students/${studentId}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    alert('Student deleted successfully!');
+                    await loadStudents();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Error deleting student');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error deleting student');
+            }
+        }
+
+        // Load events
+        async function loadEvents() {
+            try {
+                const headers = getHeaders();
+                if (!headers['X-Admin-Email']) {
+                    throw new Error('No admin email in headers');
+                }
+
+                console.log('Loading events with headers:', headers);
+                const response = await fetch('/api/admin/events', {
+                    headers
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`Failed to load events: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                updateEventList(data.events);
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.getElementById('eventList').innerHTML = 'Error loading events';
+            }
+        }
+
+        // Update event list display
+        function updateEventList(events) {
+            const eventList = document.getElementById('eventList');
+            if (!events || events.length === 0) {
+                eventList.innerHTML = '<p>No events found.</p>';
+                return;
+            }
+            
+            eventList.innerHTML = events.map(event => {
+                const eventDate = new Date(event.date);
+                const now = new Date();
+                let status = '';
+                
+                if (eventDate < now) {
+                    status = '<span class="event-status status-completed">Completed</span>';
+                } else if (eventDate.getDate() === now.getDate()) {
+                    status = '<span class="event-status status-active">Active</span>';
+                } else {
+                    status = '<span class="event-status status-upcoming">Upcoming</span>';
+                }
+
+                return `
+                    <div class="event-card">
+                        <h3>${event.title}</h3>
+                        ${status}
+                        <div class="event-details">
+                            <p><strong>Date:</strong> ${eventDate.toLocaleString()}</p>
+                            <p><strong>Location:</strong> ${event.venue}</p>
+                            <p><strong>Participants:</strong> ${event.participants?.length || 0}/${event.maxParticipants}</p>
+                            <p><strong>Description:</strong> ${event.description}</p>
+                        </div>
+                        <div class="event-actions">
+                            <button onclick="editEvent('${event._id}')" class="btn btn-primary">Edit</button>
+                            <button onclick="deleteEvent('${event._id}')" class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle add event
+        async function handleAddEvent(event) {
+            event.preventDefault();
+
+            try {
+                const headers = getHeaders();
+                if (!headers['X-Admin-Email']) {
+                    throw new Error('No admin email in headers');
+                }
+
+                // Get club info from localStorage and validate
+                const clubData = localStorage.getItem('adminClub');
+                if (!clubData) {
+                    throw new Error('No club information found. Please log in again.');
+                }
+
+                const club = JSON.parse(clubData);
+                if (!club._id) {
+                    throw new Error('Invalid club information. Please log in again.');
+                }
+
+                console.log('Creating event for club:', club._id);
+
+                const formData = {
+                    title: document.getElementById('eventTitle').value.trim(),
+                    description: document.getElementById('eventDescription').value.trim(),
+                    date: document.getElementById('eventDate').value,
+                    venue: document.getElementById('venue').value.trim(),
+                    maxParticipants: parseInt(document.getElementById('maxParticipants').value),
+                    organizedBy: club._id.toString() // Ensure it's a string
+                };
+
+                // Debug log the exact formData being sent
+                console.log('Form data being sent:', JSON.stringify(formData, null, 2));
+
+                // Validate form data
+                if (!formData.title || !formData.description || !formData.date || 
+                    !formData.venue || !formData.maxParticipants || !formData.organizedBy) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                console.log('Creating event with headers:', headers);
+                console.log('Sending event data:', formData);
+
+                const response = await fetch('/api/admin/events', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`Failed to create event: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Event created successfully:', data);
+                alert('Event created successfully!');
+                hideModal('addEventModal');
+                document.getElementById('addEventForm').reset();
+                await loadEvents();
+            } catch (error) {
+                console.error('Error creating event:', error);
+                alert(error.message || 'Error creating event. Please try again.');
+            }
+        }
+
+        // Delete event
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/events/${eventId}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    alert('Event deleted successfully!');
+                    await loadEvents();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Error deleting event');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error deleting event');
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Get admin email from localStorage
+                const adminEmail = localStorage.getItem('adminEmail');
+                if (!adminEmail) {
+                    window.location.href = '/admin-login';
+                    return;
+                }
+
+                // Verify admin and get club info
+                const response = await fetch('/api/admin/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: adminEmail })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    // Store club info
+                    localStorage.setItem('adminClub', JSON.stringify(data.club));
+                    // Update club info display
+                    document.getElementById('clubInfo').textContent = `${data.club.name} Club`;
+                    // Set initial active section
+                    loadContent('dashboard');
+                } else {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/admin-login';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading admin information. Please login again.');
+                window.location.href = '/admin-login';
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('adminEmail');
+            localStorage.removeItem('adminClub');
+            window.location.href = '/admin-login';
+        }
+    </script>
+</body>
+</html>

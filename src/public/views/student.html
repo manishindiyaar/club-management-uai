@@ -1,0 +1,275 @@
+<!-- student.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - Club Management</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --success-color: #2ecc71;
+      --background: #f0f2f5;
+      --text-color: #2c3e50;
+      --card-background: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background);
+      min-height: 100vh;
+    }
+
+    .header {
+      background-color: var(--card-background);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      color: var(--primary-color);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+    }
+
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .event-card {
+      background-color: var(--card-background);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .event-card h3 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .event-details {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .event-details p {
+      margin-bottom: 0.5rem;
+    }
+
+    .event-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .status-active {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .status-upcoming {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-primary:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+    }
+
+    .logout-btn {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .logout-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .no-events {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+      background-color: var(--card-background);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Student Dashboard</h1>
+    <button onclick="logout()" class="btn logout-btn">Logout</button>
+  </header>
+
+  <div class="container">
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Ongoing Events</h2>
+      </div>
+      <div id="eventGrid" class="event-grid">
+        <div class="no-events">Loading events...</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Load student's email from localStorage
+    const studentEmail = localStorage.getItem('studentEmail');
+    if (!studentEmail) {
+      window.location.href = '/';
+    }
+
+    // Load events
+    async function loadEvents() {
+      try {
+        const response = await fetch('/api/events');
+        const data = await response.json();
+        updateEventGrid(data.events);
+      } catch (error) {
+        console.error('Error loading events:', error);
+        document.getElementById('eventGrid').innerHTML = 
+          '<div class="no-events">Error loading events. Please try again later.</div>';
+      }
+    }
+
+    // Update event grid
+    function updateEventGrid(events) {
+      const eventGrid = document.getElementById('eventGrid');
+      
+      if (!events || events.length === 0) {
+        eventGrid.innerHTML = '<div class="no-events">No events available at the moment.</div>';
+        return;
+      }
+
+      eventGrid.innerHTML = events.map(event => {
+        const eventDate = new Date(event.date);
+        const now = new Date();
+        let status = '';
+        
+        if (eventDate < now) {
+          status = '<span class="event-status status-completed">Completed</span>';
+        } else if (eventDate.getDate() === now.getDate()) {
+          status = '<span class="event-status status-active">Active</span>';
+        } else {
+          status = '<span class="event-status status-upcoming">Upcoming</span>';
+        }
+
+        const isParticipant = event.participants.some(p => p.email === studentEmail);
+        const isFull = event.participants.length >= event.maxParticipants;
+
+        let joinButton = '';
+        if (isParticipant) {
+          joinButton = '<button class="btn btn-primary" disabled>Already Joined</button>';
+        } else if (isFull) {
+          joinButton = '<button class="btn btn-primary" disabled>Event Full</button>';
+        } else {
+          joinButton = `<button onclick="joinEvent('${event._id}')" class="btn btn-primary">Join Event</button>`;
+        }
+
+        return `
+          <div class="event-card">
+            <h3>${event.title}</h3>
+            ${status}
+            <div class="event-details">
+              <p><strong>Date:</strong> ${eventDate.toLocaleString()}</p>
+              <p><strong>Location:</strong> ${event.location}</p>
+              <p><strong>Participants:</strong> ${event.participants.length}/${event.maxParticipants}</p>
+              <p><strong>Description:</strong> ${event.description}</p>
+            </div>
+            ${joinButton}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Join event
+    async function joinEvent(eventId) {
+      try {
+        const response = await fetch(`/api/events/${eventId}/join`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: studentEmail })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert('Successfully joined the event!');
+          loadEvents(); // Reload events to update the UI
+        } else {
+          alert(data.message || 'Error joining event');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error joining event');
+      }
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('studentEmail');
+      window.location.href = '/';
+    }
+
+    // Load events when page loads
+    document.addEventListener('DOMContentLoaded', loadEvents);
+  </script>
+</body>
+</html>
