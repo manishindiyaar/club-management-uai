@@ -187,7 +187,7 @@
       const errorMessage = document.getElementById('errorMessage');
 
       try {
-        const response = await fetch('/api/admin/verify-student', {
+        const response = await fetch('/api/students/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -199,13 +199,16 @@
 
         if (response.ok) {
           localStorage.setItem('studentEmail', email);
+          localStorage.setItem('studentName', data.student.name);
+          localStorage.setItem('studentId', data.student.id);
+          console.log('Login successful, redirecting to student page');
           window.location.href = '/student';
         } else {
-          errorMessage.textContent = data.message;
+          errorMessage.textContent = data.message || 'Invalid email address';
           errorMessage.style.display = 'block';
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error during login:', error);
         errorMessage.textContent = 'Error during login. Please try again.';
         errorMessage.style.display = 'block';
       }

@@ -169,18 +169,35 @@
   </div>
 
   <script>
-    // Load student's email from localStorage
+    // Load student's info from localStorage
     const studentEmail = localStorage.getItem('studentEmail');
+    const studentName = localStorage.getItem('studentName');
+    
+    // Redirect if not logged in
     if (!studentEmail) {
       window.location.href = '/';
     }
 
+    // Update header to show student name
+    document.addEventListener('DOMContentLoaded', () => {
+      if (studentName) {
+        document.querySelector('.header h1').textContent = `Welcome, ${studentName}`;
+      }
+    });
+
     // Load events
     async function loadEvents() {
       try {
-        const response = await fetch('/api/events');
+        const response = await fetch('/api/students/events');
         const data = await response.json();
-        updateEventGrid(data.events);
+        
+        if (response.ok) {
+          updateEventGrid(data.events || []);
+        } else {
+          console.error('Error loading events:', data.message);
+          document.getElementById('eventGrid').innerHTML = 
+            `<div class="no-events">Error: ${data.message || 'Could not load events'}</div>`;
+        }
       } catch (error) {
         console.error('Error loading events:', error);
         document.getElementById('eventGrid').innerHTML = 
@@ -228,7 +245,7 @@
             ${status}
             <div class="event-details">
               <p><strong>Date:</strong> ${eventDate.toLocaleString()}</p>
-              <p><strong>Location:</strong> ${event.location}</p>
+              <p><strong>Location:</strong> ${event.venue}</p>
               <p><strong>Participants:</strong> ${event.participants.length}/${event.maxParticipants}</p>
               <p><strong>Description:</strong> ${event.description}</p>
             </div>
@@ -238,10 +255,10 @@
       }).join('');
     }
 
-    // Join event
+    // Join event - updated to use email directly
     async function joinEvent(eventId) {
       try {
-        const response = await fetch(`/api/events/${eventId}/join`, {
+        const response = await fetch(`/api/students/events/${eventId}/join`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -257,14 +274,16 @@
           alert(data.message || 'Error joining event');
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error joining event:', error);
         alert('Error joining event');
       }
     }
 
-    // Logout function
+    // Logout function - clear all student data
     function logout() {
       localStorage.removeItem('studentEmail');
+      localStorage.removeItem('studentName');
+      localStorage.removeItem('studentId');
       window.location.href = '/';
     }
 

@@ -35,6 +35,22 @@ app.get('/student', (req, res) => {
     res.render('student');
 });
 
+app.get('/admin-login', (req, res) => {
+    res.render('admin-login');
+});
+
+app.get('/super-admin-login', (req, res) => {
+    res.render('super-admin-login');
+});
+
+app.get('/platform', (req, res) => {
+    res.render('platform');
+});
+
+app.get('/platform/dashboard', (req, res) => {
+    res.render('platform-dashboard');
+});
+
 app.get('/admin', (req, res) => {
     res.render('admin');
 });

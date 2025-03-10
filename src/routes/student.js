@@ -3,23 +3,6 @@ const router = express.Router();
 const Student = require('../models/Student');
 const Club = require('../models/Club');
 const Event = require('../models/Event');
-const jwt = require('jsonwebtoken');
-
-// Middleware to verify JWT token
-const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) {
-        return res.status(401).json({ message: 'No token, authorization denied' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.student = decoded;
-        next();
-    } catch (error) {
-        res.status(401).json({ message: 'Token is not valid' });
-    }
-};
 
 // Student login/verification
 router.post('/verify', async (req, res) => {
@@ -60,7 +43,7 @@ router.get('/events', async (req, res) => {
             date: { $gte: now }
         })
         .populate('participants', 'email')
-        .populate('club', 'name')
+        .populate('organizedBy', 'name')
         .sort({ date: 1 });
 
         res.json({ events });
@@ -116,29 +99,6 @@ router.post('/events/:eventId/join', async (req, res) => {
     }
 });
 
-// Protected routes
-router.get('/my-events', verifyToken, async (req, res) => {
-    try {
-        const { email } = req.query;
-        const student = await Student.findOne({ email });
-        
-        if (!student) {
-            return res.status(404).json({ message: 'Student not found' });
-        }
-
-        const events = await Event.find({
-            participants: student._id
-        })
-        .populate('club', 'name')
-        .sort({ date: -1 });
-
-        res.json({ events });
-    } catch (error) {
-        console.error('Error fetching student events:', error);
-        res.status(500).json({ message: 'Error fetching events' });
-    }
-});
-
 // Get all clubs
 router.get('/clubs', async (req, res) => {
     try {
@@ -149,23 +109,54 @@ router.get('/clubs', async (req, res) => {
     }
 });
 
-// Student Login
+// Student Login - Simplified
 router.post('/login', async (req, res) => {
     try {
         const { email } = req.body;
+        console.log('Student login attempt with email:', email);
 
         // Find student by email
         const student = await Student.findOne({ email });
         if (!student) {
+            console.log('Student not found with email:', email);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate JWT token
-        const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET);
-
-        res.status(200).json({ token });
+        // Return success with student info
+        console.log('Student login successful:', student.name);
+        res.status(200).json({ 
+            success: true, 
+            message: 'Login successful',
+            student: {
+                id: student._id,
+                name: student.name,
+                email: student.email
+            }
+        });
     } catch (error) {
         console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Get student's joined events - Simplified
+router.get('/my-events', async (req, res) => {
+    try {
+        const { email } = req.query;
+        
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        // Find student by email
+        const student = await Student.findOne({ email }).populate('joinedEvents.event');
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        res.json(student.joinedEvents);
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 });
